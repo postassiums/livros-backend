@@ -5,6 +5,7 @@ import cors from 'npm:cors@2.8.5'
 import "jsr:@std/dotenv/load";
 import { pallete } from "./helpers/index.ts";
 import livro_routes from "./routes/livros.ts";
+import editora_routes from "./routes/editoras.ts";
 
 
 
@@ -12,7 +13,7 @@ const app=express()
 
 const PORT=Deno.env.get('BACKEND_PORT') || '9000'
 
-async function getConfigFileData() : Promise<ConfigFile | undefined>
+async function getConfigFileData() : Promise<ConfigFile >
 {
 	try{
 		const decoder=new TextDecoder('utf-8')
@@ -21,6 +22,7 @@ async function getConfigFileData() : Promise<ConfigFile | undefined>
 	}catch(e)
 	{
 		console.error(pallete.red('Failed to read config file ',e))
+		Deno.exit(1)
 	}
 }
 
@@ -35,9 +37,10 @@ type ConfigFile ={
 const CONFIG_FILE =await getConfigFileData()
 
 
-app.use(cors({origin: CONFIG_FILE?.allowed_origins,methods: ['GET','POST','DELETE'],maxAge: 99999,preflightContinue: false}))
+app.use(cors({origin: CONFIG_FILE.allowed_origins,methods: ['GET','POST','DELETE'],maxAge: 99999}))
 app.use(express.json())
 app.use(livro_routes)
+app.use(editora_routes)
 
 
 app.listen(PORT,()=>{
