@@ -1,0 +1,34 @@
+name: estacio-trabalho
+
+services:
+  backend:
+    image: estacio/backend
+    build:
+      context: .
+    volumes:
+      - .:/app
+    ports:
+      - $BACKEND_PORT:$BACKEND_PORT
+  database:
+    image: mongo:8.0.3
+    restart: always
+    container_name: $DATABASE_HOST
+    command: --port $DATABASE_PORT
+    ports:
+      - $DATABASE_PORT:$DATABASE_PORT
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: $DATABASE_USER
+      MONGO_INITDB_ROOT_PASSWORD: $DATABASE_PASSWORD
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: $MONGO_EXPRESS_USERNAME
+      ME_CONFIG_MONGODB_ADMINPASSWORD: $MONGO_EXPRESS_PASSWORD
+      ME_CONFIG_MONGODB_URL: mongodb://$DATABASE_USER:$DATABASE_PASSWORD@$DATABASE_HOST:$DATABASE_PORT/
+      ME_CONFIG_BASICAUTH: false
+    
+  
+      

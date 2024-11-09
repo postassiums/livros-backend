@@ -1,0 +1,7 @@
+# Missão Prática Nível 5 Mundo 2
+
+## Como rodar a aplicação
+
+Para rodar o backend é necessário ter instalado o docker e o docker-compose na máquina
+
+1. docker compose up -d
