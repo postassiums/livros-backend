@@ -8,7 +8,7 @@ services:
       context: .
     depends_on:
       database:
-        condition: service_started
+        condition: service_healthy
     volumes:
       - .:/app
     privileged: true
@@ -27,6 +27,10 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: $DATABASE_USER
       MONGO_INITDB_ROOT_PASSWORD: $DATABASE_PASSWORD
+    healthcheck:
+      test: mongosh mongodb://$DATABASE_USER:$DATABASE_PASSWORD@0.0.0.0:$DATABASE_PORT --eval 'db.runCommand("ping").ok'
+      timeout: 10s
+      retries: 4
     networks:
       - estacio-net
     volumes:
@@ -35,6 +39,9 @@ services:
     hostname: estacio.express
     image: mongo-express
     restart: always
+    depends_on:
+      database:
+        condition: service_healthy
     ports:
       - 8081:8081
     environment:
