@@ -3,7 +3,7 @@ import { pallete } from "../helpers/index.ts";
 import { sleep } from "https://deno.land/x/sleep/mod.ts"
 
 
-async function getDatabaseConnection()
+function getDatabaseConnection()
 {
 	const DATABASE_USER=Deno.env.get('DATABASE_USER')
 	const DATABASE_PASSWORD=Deno.env.get('DATABASE_PASSWORD')
@@ -13,9 +13,6 @@ async function getDatabaseConnection()
 	const URL=`mongodb://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}`
 	try{
 		const TIMEOUT=6*10**3
-		// console.warn(pallete.yellow('Sleeping...'))
-		// await sleep(10)
-		// console.warn(pallete.yellow('End of sleeping'))
 		const client=new MongoClient(URL,{connectTimeoutMS: TIMEOUT,socketTimeoutMS: TIMEOUT })
 		return client.db(DATABASE_NAME)
 	}catch(e)
@@ -26,7 +23,7 @@ async function getDatabaseConnection()
 	}
 }
 
-const db=await  getDatabaseConnection()
+const db= getDatabaseConnection()
 
 
 
