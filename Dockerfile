@@ -8,7 +8,7 @@ COPY . .
 
 EXPOSE $BACKEND_PORT
 
-ENTRYPOINT [ "deno","run"]
+ENTRYPOINT [ "deno"]
 
 
-CMD [ "-A" ,"--watch","src/main.ts" ]
+CMD [ "task","dev"]

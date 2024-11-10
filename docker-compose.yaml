@@ -2,24 +2,37 @@ name: estacio-trabalho
 
 services:
   backend:
+    hostname: estacio.backend
     image: estacio/backend
     build:
       context: .
+    depends_on:
+      database:
+        condition: service_started
     volumes:
       - .:/app
+    privileged: true
     ports:
       - $BACKEND_PORT:$BACKEND_PORT
+    networks:
+     - estacio-net
   database:
+    hostname: estacio.mongo
     image: mongo:8.0.3
     restart: always
     container_name: $DATABASE_HOST
-    command: --port $DATABASE_PORT
+    command: --port $DATABASE_PORT --bind_ip_all
     ports:
       - $DATABASE_PORT:$DATABASE_PORT
     environment:
       MONGO_INITDB_ROOT_USERNAME: $DATABASE_USER
       MONGO_INITDB_ROOT_PASSWORD: $DATABASE_PASSWORD
+    networks:
+      - estacio-net
+    volumes:
+      - db:/data/db
   mongo-express:
+    hostname: estacio.express
     image: mongo-express
     restart: always
     ports:
@@ -29,6 +42,15 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: $MONGO_EXPRESS_PASSWORD
       ME_CONFIG_MONGODB_URL: mongodb://$DATABASE_USER:$DATABASE_PASSWORD@$DATABASE_HOST:$DATABASE_PORT/
       ME_CONFIG_BASICAUTH: false
+    networks:
+     - estacio-net
+networks:
+  estacio-net:
+    name: estacio-net
+    driver: bridge
+volumes:
+  db:
+    name: volume-mongo-backend
     
   
       
