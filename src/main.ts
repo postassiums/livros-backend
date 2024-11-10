@@ -3,11 +3,12 @@ import express from "npm:express@5.0.1";
 // @deno-types="npm:@types/cors"
 import cors from 'npm:cors@2.8.5'
 import "jsr:@std/dotenv/load";
-import { pallete } from "./helpers/index.ts";
+import {  pallete } from "./helpers/index.ts";
 import livro_routes from "./routes/livros.ts";
 import editora_routes from "./routes/editoras.ts";
 // @deno-types="npm:@types/morgan"
 import morgan from 'npm:morgan@1.10.0'
+import { fillDatabaseWithData } from "./database/query.ts";
 
 
 const app=express()
@@ -45,7 +46,8 @@ app.use(livro_routes)
 app.use(editora_routes)
 
 
-app.listen(PORT,()=>{
+app.listen(PORT,async ()=>{
+	await fillDatabaseWithData()
 	console.log(pallete.green(`Listening on ${PORT}`))
 })
 

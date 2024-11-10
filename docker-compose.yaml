@@ -15,7 +15,7 @@ services:
     ports:
       - $BACKEND_PORT:$BACKEND_PORT
     networks:
-     - estacio-net
+      - estacio-net
   database:
     hostname: estacio.mongo
     image: mongo:8.0.3
@@ -47,7 +47,11 @@ services:
 networks:
   estacio-net:
     name: estacio-net
-    driver: bridge
+    # ipam:
+    #   config:
+    #     - subnet: 192.168.3.0/28
+    # driver: bridge
+
 volumes:
   db:
     name: volume-mongo-backend

@@ -1,38 +1,25 @@
-import db from "./index.ts"
 import z from 'npm:zod@3.23.8'
-const {Schema}=db
-
-export const EditoraSchema=new Schema({
-	nome: {
-		type: String,
-		required: true
-	},
-	codigo: {
-		type: Number,
-		required: true,
-	}
-})
+import db from "./index.ts";
 
 
 
-export const livroSchema=new Schema({
-	codEditora: {
-		type: Number,
-		required: true
-	},
-	titulo: {
-		type: String,
-		required: true
-	},
-	resumo: {
-		type: String,
-		required: true
-	},
-	autores: {
-		type: [String],
-		required: true
-	}
-})
+export interface Editora{
+	nome: string
+	codigo: number
+}
+
+export interface Livro{
+	codEditora: number,
+	titulo: string
+	resumo: string,
+	autores: string[]
+}
+
+
+export const livro_collection=db.collection<Livro>('livros')
+
+export const editora_collection=db.collection<Editora>('editoras')
+
 
 
 
