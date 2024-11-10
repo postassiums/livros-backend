@@ -6,7 +6,8 @@ import "jsr:@std/dotenv/load";
 import { pallete } from "./helpers/index.ts";
 import livro_routes from "./routes/livros.ts";
 import editora_routes from "./routes/editoras.ts";
-
+// @deno-types="npm:@types/morgan"
+import morgan from 'npm:morgan@1.10.0'
 
 
 const app=express()
@@ -39,6 +40,7 @@ const CONFIG_FILE =await getConfigFileData()
 
 app.use(cors({origin: CONFIG_FILE.allowed_origins,methods: ['GET','POST','DELETE'],maxAge: 99999}))
 app.use(express.json())
+app.use(morgan('combined'))
 app.use(livro_routes)
 app.use(editora_routes)
 
