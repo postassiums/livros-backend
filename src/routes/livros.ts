@@ -1,18 +1,70 @@
 // @deno-types="npm:@types/express@4.17.15"
-import express from 'npm:express@5.0.1'
+import express, { Request, Response } from 'npm:express@5.0.1'
 import { LivroModel } from "../database/model.ts";
-import z from 'npm:zod@3.23.8'
+import { RawLivroZodSchema, livro_zod_schema } from "../database/schema.ts";
+import { EditoraModel } from "../database/model.ts";
 const livros_routes=express()
 
 
 async function getAllLivros()
 {
-	return await LivroModel.find()
+	const pipeline=[
+		{
+			
+			$lookup: {
+				from: "editoras",
+				localField: "codEditora",
+				foreignField: "codigo",
+				as: "editora"
+			},
+		},
+		{ $unwind: "$editora" } ,
+		{
+			$project:{
+				resumo: 1,
+				autores: 1,
+				titulo: 1,
+
+				editora: '$editora.name'
+			},
+		}
+	 ]
+	return await LivroModel.aggregate(pipeline)
 }
 
 async function deleteLivro(id : string)
 {
 	return await LivroModel.deleteOne({_id: id})
+}
+async function findEditoraByCodigo(codigo : number)
+{
+	return await EditoraModel.findOne({codigo})
+}
+async function validateLivro(req : Request,res : Response)
+{
+	const {body}=req
+
+	const valid_livro=livro_zod_schema.safeParse(body)
+	if(!valid_livro.success)
+	{
+		res.status(400).json({ message: valid_livro.error });
+		return 
+	}
+
+	const found_editora=await findEditoraByCodigo(valid_livro.data.codEditora)
+	if(found_editora==null)
+	{
+		res.status(400).json({message: 'Código da editora informado não existe'})
+		return 
+		
+	}
+	return valid_livro
+}
+async function createLivro(res: Response,livro_data : RawLivroZodSchema)
+{
+	const new_livro=new LivroModel(livro_data)
+	await new_livro.save()
+	res.status(201).json({message: 'Livro criado com sucesso'})
 }
 
 
@@ -29,23 +81,16 @@ livros_routes.route('/livros')
 })
 .post(async(req,res)=>{
 	try{
-		const {body}=req
-		const livro_zod_schema=z.object({
-			titulo: z.string({required_error: 'Título é obrigatório'}),
-			resumo: z.string({required_error: 'Resumo é Obrigatório'}),
-			autores: z.string({required_error: 'Autores é obrigatório'}),
-			codEditora: z.number({required_error: 'Código da editora é obrigaório',
-				invalid_type_error: 'Código da editora deve ser um campo númerico'})
-		})
-		const valid_livro=livro_zod_schema.parse(body)
-		const new_livro=new LivroModel(valid_livro)
-		await new_livro.save()
+		const valid_livro=await validateLivro(req,res)
+		if(valid_livro==undefined)
+		{
+			return
+		}
+		await createLivro(res,valid_livro.data)
 
 	}catch(e)
 	{
-		if (e instanceof z.ZodError) {
-			return res.status(400).json({ errors: e.errors });
-		}
+	
 		res.status(500).json({message: 'Não foi possível cria um livro ',e})
 	}
 
