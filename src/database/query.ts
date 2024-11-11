@@ -63,7 +63,7 @@ export async function fillDatabaseWithData()
 
 export async function findEditoraByCodigo(codigo : number)
 {
-	return await livro_collection.findOne({codigo})
+	return await editora_collection.findOne({codigo: codigo})
 }
 
 
@@ -86,7 +86,7 @@ export function getAllLivros()
 				autores: 1,
 				titulo: 1,
 
-				editora: '$editora.name'
+				editora: '$editora.nome'
 			},
 		}
 	 ]

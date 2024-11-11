@@ -1,7 +1,7 @@
 // @deno-types="npm:@types/express@4.17.15"
 import express, { Request, Response } from 'npm:express@5.0.1'
 import { RawLivroZodSchema, livro_collection, livro_zod_schema } from "../database/schema.ts";
-import { deleteLivro, findEditoraByCodigo, getAllEditoras } from "../database/query.ts";
+import { deleteLivro, findEditoraByCodigo, getAllEditoras, getAllLivros } from "../database/query.ts";
 
 const livros_routes=express()
 
@@ -37,7 +37,7 @@ async function createLivro(res: Response,livro_data : RawLivroZodSchema)
 livros_routes.route('/livros')
 .get(async(req,res)=>{
 	try{
-		const livros=await getAllEditoras()	
+		const livros=await getAllLivros()	
 		res.status(200).json(livros)
 	}catch(e)
 	{
