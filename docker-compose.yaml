@@ -3,6 +3,7 @@ name: estacio-trabalho
 services:
   backend:
     hostname: estacio.backend
+    container_name: estacio_backend
     image: estacio/backend
     build:
       context: .
