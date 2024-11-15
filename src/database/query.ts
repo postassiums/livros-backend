@@ -73,7 +73,7 @@ export function getAllLivros()
 		{
 			
 			$lookup: {
-				from: "editoras",
+				from: editora_collection.collectionName,
 				localField: "codEditora",
 				foreignField: "codigo",
 				as: "editora"
